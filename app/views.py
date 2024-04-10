@@ -19,18 +19,18 @@ def save_action_log(method, status, endpoint):
     log.save()
         
     
-@api_view(['GET', 'POST']) #Parametro de comando HTTP e que devera responder
-def expense_list(request): #Minha função de trazer todos meus opjetos e criar um novo
+@api_view(['GET', 'POST'])
+def expense_list(request):
     save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
-    if request.method == 'GET': # se minha requisição for do metodo GET faça algo para mim
-        expense = Expense.objects.all() # variavel que recebe todos os meus objetos do meu model
-        serializer = ExpenseSerializer(expense, many=True) # variavel que recebe meu serializer
-        return Response(serializer.data) # retorna minha resposta que trara da minha variavel o .data e os dados dela
+    if request.method == 'GET':
+        expense = Expense.objects.all() 
+        serializer = ExpenseSerializer(expense, many=True)
+        return Response(serializer.data)
     elif request.method == 'POST':
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED) # retorna um status ja pre formatado
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
