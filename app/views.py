@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Expense, ActionLogs
-from .serializer import ExpenseSerializer
+from .models import Expense, ActionLogs, Category
+from .serializer import ExpenseSerializer, CategorySerializer
 
 def home(request):
     return HttpResponse("Bem Vindo")
@@ -26,7 +26,7 @@ def expense_list(request):
         expense = Expense.objects.all() 
         serializer = ExpenseSerializer(expense, many=True)
         return Response(serializer.data)
-    elif request.method == 'POSeT':
+    elif request.method == 'POST':
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -52,4 +52,39 @@ def expense_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         expense.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+@api_view(['GET', 'POST'])
+def category_list(request):
+    if request.method == 'GET':
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET', 'PUT', 'DELETE'])
+def category_detail(request, pk):
+    try:
+        category = Category.objects.get(pk=pk)
+    except Category.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=serializer.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
