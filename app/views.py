@@ -26,7 +26,7 @@ def expense_list(request):
         expense = Expense.objects.all() 
         serializer = ExpenseSerializer(expense, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+    elif request.method == 'POSeT':
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -35,6 +35,7 @@ def expense_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def expense_detail(request, pk):
+    save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
     try:
         expense = Expense.objects.get(pk=pk)
     except Expense.DoesNotExist:
