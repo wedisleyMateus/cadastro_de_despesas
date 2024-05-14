@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0002_actionlogs'),
+        ('expense', '0002_actionlogs'),
     ]
 
     operations = [
@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='expense',
             name='category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='app.category'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='expense.category'),
         ),
     ]
