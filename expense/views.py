@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -19,72 +19,97 @@ def save_action_log(method, status, endpoint):
     log.save()
         
     
-@api_view(['GET', 'POST'])
-def expense_list(request):
-    save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
-    if request.method == 'GET':
-        expense = Expense.objects.all() 
+class ExpenseList(APIView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def dispatch(self, request, *args, **kwargs):
+        save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, format=None):
+        expense = Expense.objects.all()
         serializer = ExpenseSerializer(expense, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+    def post(self, request, format=None):
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def expense_detail(request, pk):
-    save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
-    try:
-        expense = Expense.objects.get(pk=pk)
-    except Expense.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+class ExpenseDetail(APIView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    if request.method == 'GET':
+    def dispatch(self, request, *args, **kwargs):
+        save_action_log(request.method, status=status.HTTP_200_OK, endpoint=request.path)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, pk):
+        try:
+            return Expense.objects.get(pk=pk)
+        except Expense.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        expense = self.get_object(pk)
         serializer = ExpenseSerializer(expense)
         return Response(serializer.data)
-    elif request.method == 'PUT':
+
+    def put(self, request, pk, format=None):
+        expense = self.get_object(pk)
         serializer = ExpenseSerializer(expense, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        expense = self.get_object(pk)
         expense.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class CategoryList(APIView):
 
-@api_view(['GET', 'POST'])
-def category_list(request):
-    if request.method == 'GET':
+    def get(self, request, format=None):
         category = Category.objects.all()
         serializer = CategorySerializer(category, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+    def post(self, request, format=None):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['GET', 'PUT', 'DELETE'])
-def category_detail(request, pk):
-    try:
-        category = Category.objects.get(pk=pk)
-    except Category.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    
-    if request.method == 'GET':
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CategoryDatail(APIView):
+
+    def get_objects(self, pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        category = self.get_objects(pk)
         serializer = CategorySerializer(category)
         return Response(serializer.data)
-    elif request.method == 'PUT':
-        serializer = CategorySerializer(category, data=serializer.data)
+
+    def put(self, request, pk, format=None):
+        category = self.get_objects(pk)
+        serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, format=None):
+        category = self.get_objects(pk)
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
