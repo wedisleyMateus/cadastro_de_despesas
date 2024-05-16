@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -8,35 +8,84 @@ from .serializer import (
     RevenueValueSerializer
 )
 
-@api_view(['GET', 'POST'])
-def associations_list(request):
-    if request.method == 'GET':
+class AssociationsList(APIView):
+
+    def get(self, request, format=None):
         association = BankingAssociation.objects.all()
         serializer = BankingAssociationSerializer(association, many=True)
         return Response(serializer.data)
-    elif request.method == 'POST':
+
+    def post(self, request, format=None):
         serializer = BankingAssociationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['GET', 'PUT', 'DELETE'])
-def association_detail(request, pk):
-    try:
-        association = BankingAssociation.objects.get(pk=pk)
-    except BankingAssociation.DoesNotExist:
-        return Response(statys=status.HTTP_400_BAD_REQUEST)
-    
-    if request.method == 'GET':
+
+class AssociationsDetail(APIView):
+
+    def get_object(self, pk):
+        try:
+            return BankingAssociation.objects.get(pk=pk)
+        except BankingAssociation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        association = self.get_object(pk)
         serializer = BankingAssociationSerializer(association)
         return Response(serializer.data)
-    elif request.method == 'PUT':
-        serializer = BankingAssociationSerializer(association, data=serializer.data)
+
+    def put(self, request, pk, format=None):
+        association = self.get_object(pk)
+        serializer = BankingAssociationSerializer(association, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        association.delete()
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        association = self.get_object(pk)
+        association.dalete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RevenueList(APIView):
+
+    def get(self, request, format=None):
+        revenue = RevenueValue.objects.all()
+        serializer = RevenueValueSerializer(revenue, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = RevenueValueSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RevenueDetail(APIView):
+
+    def get_objects(self, pk):
+        try:
+            return RevenueValue.objects.get(pk=pk)
+        except RevenueValue.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        revenue = self.get_objects(pk)
+        serializer = RevenueValueSerializer(revenue)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        revenue = self.get_objects(pk)
+        serializer = RevenueValueSerializer(revenue, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        revenue = self.get_objects(pk)
+        revenue.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
