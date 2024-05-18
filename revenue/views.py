@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import BankingAssociation, RevenueValue
 from .serializer import (
@@ -8,7 +9,7 @@ from .serializer import (
     RevenueValueSerializer
 )
 
-class AssociationsList(APIView):
+class AssociationsList(LoginRequiredMixin, APIView):
 
     def get(self, request, format=None):
         association = BankingAssociation.objects.all()
@@ -22,7 +23,7 @@ class AssociationsList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AssociationsDetail(APIView):
+class AssociationsDetail(LoginRequiredMixin, APIView):
 
     def get_object(self, pk):
         try:
@@ -49,7 +50,7 @@ class AssociationsDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RevenueList(APIView):
+class RevenueList(LoginRequiredMixin, APIView):
 
     def get(self, request, format=None):
         revenue = RevenueValue.objects.all()
@@ -64,7 +65,7 @@ class RevenueList(APIView):
         return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RevenueDetail(APIView):
+class RevenueDetail(LoginRequiredMixin, APIView):
 
     def get_objects(self, pk):
         try:

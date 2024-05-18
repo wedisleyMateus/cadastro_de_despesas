@@ -58,7 +58,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,6 +110,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'America/Recife'
+
+LOGIN_URL = '/login/'
 
 USE_I18N = True
 

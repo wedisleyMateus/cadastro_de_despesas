@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Expense, ActionLogs, Category
 from .serializer import ExpenseSerializer, CategorySerializer
@@ -19,7 +20,7 @@ def save_action_log(method, status, endpoint):
     log.save()
         
     
-class ExpenseList(APIView):
+class ExpenseList(LoginRequiredMixin, APIView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -39,7 +40,7 @@ class ExpenseList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ExpenseDetail(APIView):
+class ExpenseDetail(LoginRequiredMixin, APIView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -72,7 +73,7 @@ class ExpenseDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CategoryList(APIView):
+class CategoryList(LoginRequiredMixin, APIView):
 
     def get(self, request, format=None):
         category = Category.objects.all()
@@ -87,7 +88,7 @@ class CategoryList(APIView):
         return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryDatail(APIView):
+class CategoryDatail(LoginRequiredMixin, APIView):
 
     def get_objects(self, pk):
         try:
