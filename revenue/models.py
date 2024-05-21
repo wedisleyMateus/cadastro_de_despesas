@@ -1,42 +1,74 @@
 from django.db import models
 from django.utils import timezone
-from django.dispatch import receiver
-from django.db.models import Sum
-from django.db.models.signals import post_save, post_delete
 
-class BankingAssociation(models.Model):
-    service = models.CharField(max_length=200)
+class User(models.Model):
+    name = models.CharField(max_length=30)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    address = models.CharField(max_length=250, null=True, blank=True)
+
+    def __str__(self):
+        return f"Name: {self.name} Phone: {self.phone}"
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Category: {self.name}"
+
+class Recurrence(models.Model):
+    type = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"Type of recurrence: {self.type}"
+
+class Contract(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateField(default=timezone.now)
+    term_date = models.DateField(blank=True, null=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField(auto_now=False)
+    recurrence = models.ForeignKey(Recurrence, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"service: {self.service}, Value: {self.value}, Date: {self.date}"
+        return (f"Contract Name: {self.name}, Contractor: {self.user}, "
+                f"Value: {self.value}")
 
-class RevenueValue(models.Model):
-    fixed_revenue = models.ForeignKey(BankingAssociation, 
-                                      on_delete=models.CASCADE, null=True, blank=True)
-    variable_revenue = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    date = models.DateField(auto_now=False)
-    details = models.CharField(max_length=250, null=True, blank=True)
+class RecipeCategory(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Fixed Revenue: {self.fixed_revenue}, Variable Revenue:{self.variable_revenue}, Date: {self.date}"
+        return f"Category: {self.name}"
 
-class NetRevenue(models.Model):
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    datetime = models.DateTimeField(default=timezone.now)
+class Recipe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    revenue_date = models.DateField(default=timezone.now)
+    recipe_category = models.ForeignKey(RecipeCategory,
+                                        on_delete=models.CASCADE)
+    start_date = models.DateField(blank=True, null=True)
+    term_date = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return self.amount
+        return (f"Recipe Category: {self.recipe_category.name} - "
+                f"{self.user.name} - {self.value}")
 
+class PaymentMethod(models.Model):
+    name = models.CharField(max_length=30)
 
-@receiver([post_save, post_delete], sender=RevenueValue)
-def update_net_revenue(sender, instance, **kwargs):
-    created, net_revenue = NetRevenue.objects.get_or_create(pk=1)
+    def __str__(self):
+        return f"Form of payment: {self.name}"
 
-    total_revenue = RevenueValue.objects.all().aggregate(n1=Sum('fixed_revenue__value'), n2=Sum('variable_revenue'))
-    net_revenue = NetRevenue.objects.first()
-    count = float(total_revenue['n1'] or 0) + float(total_revenue['n2'] or 0)
-    net_revenue.amount = count
-    net_revenue.save()
+class ContractRecipe(models.Model):
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    paid = models.BinaryField()
+    payment_form = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (f"Contract: {self.contract.name} - {self.recipe.value} - "
+                f"{self.payment_form.name}")
