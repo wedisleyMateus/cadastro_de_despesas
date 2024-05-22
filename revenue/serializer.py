@@ -1,12 +1,59 @@
 from rest_framework import serializers
-from .models import BankingAssociation, RevenueValue
+from .models import (
+    User,
+    Category,
+    Recurrence,
+    Contract,
+    RecipeCategory,
+    Recipe,
+    PaymentMethod,
+    ContractRecipe
+)
 
-class BankingAssociationSerializer(serializers.ModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BankingAssociation
+        model = User
         fields = '__all__'
 
-class RevenueValueSerializer(serializers.ModelSerializer):
+
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = RevenueValue
+        model = Category
+        fields = '__all__'
+
+
+class RecurrenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recurrence
+        fields = '__all__'
+
+
+class ContractSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contract
+        fields = '__all__'
+
+
+class RecipeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeCategory
+        fields = '__all__'
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = '__all__'
+
+
+class PaymentMethodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentMethod
+        fields = '__all__'
+
+
+class ContractRecipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContractRecipe
         fields = '__all__'
