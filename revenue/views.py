@@ -1,92 +1,95 @@
+from .models import User
+from .models import Category
+
+from .serializer import UserSerializer
+from .serializer import CategorySerializer
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import BankingAssociation, RevenueValue
-from .serializer import (
-    BankingAssociationSerializer, 
-    RevenueValueSerializer
-)
 
-class AssociationsList(LoginRequiredMixin, APIView):
+
+class UserList(APIView):
 
     def get(self, request, format=None):
-        association = BankingAssociation.objects.all()
-        serializer = BankingAssociationSerializer(association, many=True)
+        user = User.objects.all()
+        serializer = UserSerializer(user, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = BankingAssociationSerializer(data=request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AssociationsDetail(LoginRequiredMixin, APIView):
+
+class UserDetail(APIView):
 
     def get_object(self, pk):
         try:
-            return BankingAssociation.objects.get(pk=pk)
-        except BankingAssociation.DoesNotExist:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk, format=None):
-        association = self.get_object(pk)
-        serializer = BankingAssociationSerializer(association)
+        user = self.get_object(pk)
+        serializer = UserSerializer(user)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        association = self.get_object(pk)
-        serializer = BankingAssociationSerializer(association, many=True)
+        user = self.get_object(pk)
+        serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        association = self.get_object(pk)
-        association.dalete()
+        user = self.get_object(pk)
+        user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RevenueList(LoginRequiredMixin, APIView):
+class CategoryList(APIView):
 
     def get(self, request, format=None):
-        revenue = RevenueValue.objects.all()
-        serializer = RevenueValueSerializer(revenue, many=True)
+        category = Category.objects.all()
+        serializer = CategorySerializer(category, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = RevenueValueSerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CategoryDetail(APIView):
 
-class RevenueDetail(LoginRequiredMixin, APIView):
-
-    def get_objects(self, pk):
+    def get_object(self, pk):
         try:
-            return RevenueValue.objects.get(pk=pk)
-        except RevenueValue.DoesNotExist:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk, format=None):
-        revenue = self.get_objects(pk)
-        serializer = RevenueValueSerializer(revenue)
+        category = self.get_object(pk)
+        serializer = CategorySerializer(category)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        revenue = self.get_objects(pk)
-        serializer = RevenueValueSerializer(revenue, many=True)
+        category = self.get_object(pk)
+        serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        revenue = self.get_objects(pk)
-        revenue.delete()
+        category = self.get_object(pk)
+        category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
