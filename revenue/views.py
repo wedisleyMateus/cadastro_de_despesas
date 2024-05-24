@@ -1,5 +1,4 @@
 from .models import User
-from .models import Category
 from .models import Recurrence
 from .models import Contract
 from .models import RecipeCategory
@@ -8,7 +7,6 @@ from .models import PaymentMethod
 from .models import ContractRecipe
 
 from .serializer import UserSerializer
-from .serializer import CategorySerializer
 from .serializer import RecurrenceSerializer
 from .serializer import ContractSerializer
 from .serializer import RecipeCategorySerializer
