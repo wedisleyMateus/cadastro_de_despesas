@@ -11,13 +11,6 @@ class User(models.Model):
     def __str__(self):
         return f"Name: {self.name} Phone: {self.phone}"
 
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Category: {self.name}"
-
 class Recurrence(models.Model):
     type = models.CharField(max_length=50)
 

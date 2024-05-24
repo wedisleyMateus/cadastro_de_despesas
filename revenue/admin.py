@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Category
+from .models import User
 from .models import Recurrence, Contract
 from .models import RecipeCategory, Recipe
 from .models import PaymentMethod,  ContractRecipe
@@ -7,10 +7,6 @@ from .models import PaymentMethod,  ContractRecipe
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['name', 'email', 'phone']
-
-
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
 
 
 class RecurrenceAdmin(admin.ModelAdmin):
@@ -58,7 +54,6 @@ class ContractRecipeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Category, CategoryAdmin)
 admin.site.register(Recurrence, RecurrenceAdmin)
 admin.site.register(Contract, ContractAdmin)
 admin.site.register(RecipeCategory, RecipeCategoryAdmin)
