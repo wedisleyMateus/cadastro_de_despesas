@@ -34,7 +34,7 @@ class Contract(models.Model):
     recurrence = models.ForeignKey(Recurrence, on_delete=models.CASCADE)
 
     def __str__(self):
-        return (f"Contract Name: {self.name}, Contractor: {self.user}, "
+        return (f"Contract Name: {self.name}, Contractor: {self.user.name}, "
                 f"Value: {self.value}")
 
 class RecipeCategory(models.Model):
