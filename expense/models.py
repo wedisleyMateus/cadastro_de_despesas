@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 
-class User(models.Model):
+class ExpenseUser(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True)

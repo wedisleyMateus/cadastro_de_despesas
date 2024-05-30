@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import User, Expense, ActionLogs, Category
-from .serializer import UserSerializer, ExpenseSerializer, CategorySerializer
+from .models import ExpenseUser, Expense, ActionLogs, Category
+from .serializer import ExpenseUserSerializer, ExpenseSerializer, CategorySerializer
 
 def home(request):
     return HttpResponse("Bem Vindo")
@@ -20,37 +20,37 @@ def save_action_log(method, status, endpoint):
     log.save()
         
 
-class UserList(APIView):
+class ExpenseUserList(APIView):
 
     def get(self, request, format=None):
-        user = User.objects.all()
-        serializer = UserSerializer(user, many=True)
+        user = ExpenseUser.objects.all()
+        serializer = ExpenseUserSerializer(user, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
+        serializer = ExpenseUserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetail(APIView):
+class ExpenseUserDetail(APIView):
 
     def get_object(self, pk):
         try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
+            return ExpenseUser.objects.get(pk=pk)
+        except ExpenseUser.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def get(self, request, pk, format=None):
-        user = User.get_object(pk)
-        serializer = UserSerializer(user)
+        user = ExpenseUser.get_object(pk)
+        serializer = ExpenseUserSerializer(user)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        user = User.get_object(pk)
-        serializer = UserSerializer(user, data=request.data)
+        user = ExpenseUser.get_object(pk)
+        serializer = ExpenseUserSerializer(user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -58,7 +58,7 @@ class UserDetail(APIView):
 
 
     def delete(self, request, pk, format=None):
-        user = User.get_objetc(pk)
+        user = ExpenseUser.get_objetc(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

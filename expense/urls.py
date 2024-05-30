@@ -4,11 +4,16 @@ from .views import (
     ExpenseList, 
     ExpenseDetail, 
     CategoryList,
-    CategoryDatail
+    CategoryDatail,
+    ExpenseUserList,
+    ExpenseUserDetail
 )
 
 urlpatterns = [
     path('', home, name='home'),
+
+    path('api/expense-users/', ExpenseUserList.as_view(), name='expense_users_list'),
+    path('api/expense-user/<int:pk>/', ExpenseUserDetail.as_view(), name='expense_user_detail'),
 
     path('api/expenses/', ExpenseList.as_view(), name='expense_list'),
     path('api/expense/<int:pk>/', ExpenseDetail.as_view(), name='expense_detail'),
