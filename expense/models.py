@@ -28,6 +28,18 @@ class Expense(models.Model):
         return f"Description: {self.description}, Category: {self.category}"
 
 
+class AdministrativeCosts(models.Model):
+    accounting = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    consultancy = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+    insurance = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+    light = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    water = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    Internet = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    rent = models.DecimalField(max_digits=11, decimal_places=2, null=True)
+    depreciation = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    amortization = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+
+
 class ActionLogs(models.Model):
     method = models.CharField(max_length=30)
     status = models.CharField(max_length=30)
