@@ -38,6 +38,10 @@ class AdministrativeCosts(models.Model):
     rent = models.DecimalField(max_digits=11, decimal_places=2, null=True)
     depreciation = models.DecimalField(max_digits=12, decimal_places=2, null=True)
     amortization = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    datetime = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Accounting: {self.accounting}, Date: {self.datetime}"
 
 
 class ActionLogs(models.Model):

@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import ExpenseUser, Expense, ActionLogs, Category
-from .serializer import ExpenseUserSerializer, ExpenseSerializer, CategorySerializer
+from .models import ExpenseUser, Expense, ActionLogs, Category, AdministrativeCosts
+from .serializer import ExpenseUserSerializer, ExpenseSerializer, CategorySerializer, AdministrativeCostsSerializer
 
 def home(request):
     return HttpResponse("Bem Vindo")
@@ -108,7 +108,7 @@ class ExpenseDetail(LoginRequiredMixin, APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         expense = self.get_object(pk)
@@ -128,7 +128,7 @@ class CategoryList(LoginRequiredMixin, APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryDatail(LoginRequiredMixin, APIView):
@@ -150,10 +150,51 @@ class CategoryDatail(LoginRequiredMixin, APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.erros, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         category = self.get_objects(pk)
         category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class AdministrativeCostsList(APIView):
+
+    def get(self, request, format=None):
+        administrative = AdministrativeCosts.objects.all()
+        serializer = AdministrativeCostsSerializer(administrative, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AdministrativeCostsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdministrativeCostsDetail(APIView):
+
+    def get_objects(self, pk):
+        try:
+            return AdministrativeCosts.objects.get(pk=pk)
+        except AdministrativeCosts.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get(self, request, pk, format=None):
+        administrative = self.get_objects(pk)
+        serializer = AdministrativeCostsSerializer(administrative)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        administrative = self.get_objects(pk)
+        serializer = AdministrativeCostsSerializer(administrative, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        administrative = self.get_objects(pk)
+        administrative.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
